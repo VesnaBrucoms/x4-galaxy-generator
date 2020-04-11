@@ -53,8 +53,6 @@ if __name__ == "__main__":
     for cluster in input_json["clusters"]:
         add_cluster(connections, prefix, cluster["id"], cluster["x"], cluster["z"])
 
-    ElementTree.dump(root)
-    output = ElementTree.tostring(root, encoding="unicode")
-    dom = minidom.parseString(output)
-    with open("galaxy.xml", mode="w") as galaxy_file:
-        galaxy_file.write(dom.toprettyxml(indent="  "))
+    doc = minidom.parseString(ElementTree.tostring(root))
+    with open("galaxy.xml", "wb") as galaxy_file:
+        galaxy_file.write(doc.toprettyxml(encoding="utf-8"))
