@@ -9,8 +9,28 @@ Z_HEX_SPACING = 17320000
 Z_HALF_SPACING = 8660000
 
 
-def add_cluster(connections, prefix, cluster_id, cluster_x, cluster_z):
-    x_position, y_position = calculate_absolute_position(cluster_x, cluster_z)
+def build_galaxy_file(name, prefix, clusters, connections):
+    root = ElementTree.Element("macros")
+    macro = ElementTree.SubElement(root, "macro")
+    macro.set("name", f"{prefix}_{name}_macro")
+    macro.set("class", "galaxy")
+
+    _add_component_ref_element(macro, "standardgalaxy")
+
+    connections = ElementTree.SubElement(macro, "connections")
+    for cluster in input_json["clusters"]:
+        _add_cluster(connections, prefix, cluster["id"], cluster["x"], cluster["z"])
+
+    return root
+
+
+def _add_component_ref_element(parent, value):
+    component = ElementTree.SubElement(parent, "component")
+    component.set("ref", value)
+
+
+def _add_cluster(connections, prefix, cluster_id, cluster_x, cluster_z):
+    x_position, y_position = _calculate_absolute_position(cluster_x, cluster_z)
     connection = ElementTree.SubElement(connections, "connection")
     connection.set("name", f"{prefix}_cluster{cluster_id:02}_connection")
     connection.set("ref", "clusters")
@@ -24,13 +44,17 @@ def add_cluster(connections, prefix, cluster_id, cluster_x, cluster_z):
     sub_macro.set("connection", "galaxy")
 
 
-def calculate_absolute_position(x_coord, z_coord):
+def _calculate_absolute_position(x_coord, z_coord):
     x_absolute = x_coord * X_HEX_SPACING
     z_absolute = z_coord * Z_HEX_SPACING
     if x_coord % 2 != 0:
         z_absolute += Z_HALF_SPACING
 
     return (x_absolute, z_absolute)
+
+
+def _add_connection():
+    pass
 
 
 if __name__ == "__main__":
@@ -41,18 +65,10 @@ if __name__ == "__main__":
     name = input_json["name"]
     prefix = input_json["prefix"]
 
-    root = ElementTree.Element("macros")
-    macro = ElementTree.SubElement(root, "macro")
-    macro.set("name", prefix + "_" + name + "_macro")
-    macro.set("class", "galaxy")
+    galaxy_root = build_galaxy_file(
+        name, prefix, input_json["clusters"], input_json["connections"]
+    )
 
-    component = ElementTree.SubElement(macro, "component")
-    component.set("ref", "standardgalaxy")
-
-    connections = ElementTree.SubElement(macro, "connections")
-    for cluster in input_json["clusters"]:
-        add_cluster(connections, prefix, cluster["id"], cluster["x"], cluster["z"])
-
-    doc = minidom.parseString(ElementTree.tostring(root))
+    doc = minidom.parseString(ElementTree.tostring(galaxy_root))
     with open("galaxy.xml", "wb") as galaxy_file:
         galaxy_file.write(doc.toprettyxml(encoding="utf-8"))
