@@ -14,20 +14,20 @@
                     "id": 1,
                     "name": "Heretic's End",
                     "description": "Test desc.",
-                    "zones": [
+                    "gates": [
                         {
-                            "id": 1,
-                            "gate_c01s001z001_c02s001z001": {
-                                "x": 0,
-                                "y": 0,
-                                "z": 7500,
-                                "yaw": 180,
-                                "pitch": 0,
-                                "roll": 0,
-                                "prop": "props_gates_anc_gate_macro"
-                            }
+                            "dest_cluster": 2,
+                            "dest_sector": 1,
+                            "x": 0,
+                            "y": 0,
+                            "z": 7500,
+                            "yaw": 100,
+                            "pitch": 0,
+                            "roll": 0,
+                            "prop": "props_gates_anc_gate_macro"
                         }
-                    ]
+                    ],
+                    "zones": []
                 }
             ]
         },
@@ -43,38 +43,42 @@
                     "id": 1,
                     "name": "Asteroid Belt",
                     "description": "Test desc.",
-                    "zones": [
+                    "gates": [
                         {
-                            "id": 1,
-                            "gate_c02s001z001_c01s001z001": {
-                                "x": 0,
-                                "y": 0,
-                                "z": -10000,
-                                "yaw": 0,
-                                "pitch": 0,
-                                "roll": 0,
-                                "prop": "props_gates_anc_gate_macro"
-                            },
-                            "gate_c02s001z001_c03s001z001": {
-                                "x": 7500,
-                                "y": 0,
-                                "z": 7500,
-                                "yaw": 270,
-                                "pitch": 0,
-                                "roll": 0,
-                                "prop": "props_gates_orb_accelerator_01_macro"
-                            },
-                            "gate_c02s001z001_c08s001z001": {
-                                "x": -25000,
-                                "y": 0,
-                                "z": 25000,
-                                "yaw": 135,
-                                "pitch": 0,
-                                "roll": 0,
-                                "prop": "props_gates_orb_accelerator_01_macro"
-                            }
+                            "dest_cluster": 1,
+                            "dest_sector": 1,
+                            "x": 0,
+                            "y": 0,
+                            "z": -10000,
+                            "yaw": 0,
+                            "pitch": 0,
+                            "roll": 0,
+                            "prop": "props_gates_anc_gate_macro"
+                        },
+                        {
+                            "dest_cluster": 3,
+                            "dest_sector": 1,
+                            "x": 7500,
+                            "y": 0,
+                            "z": 7500,
+                            "yaw": 270,
+                            "pitch": 0,
+                            "roll": 0,
+                            "prop": "props_gates_orb_accelerator_01_macro"
+                        },
+                        {
+                            "dest_cluster": 8,
+                            "dest_sector": 1,
+                            "x": -25000,
+                            "y": 0,
+                            "z": 25000,
+                            "yaw": 135,
+                            "pitch": 0,
+                            "roll": 0,
+                            "prop": "props_gates_orb_accelerator_01_macro"
                         }
-                    ]
+                    ],
+                    "zones": []
                 }
             ]
         },
@@ -90,37 +94,33 @@
                     "id": 1,
                     "name": "Mars",
                     "description": "Test desc.",
-                    "zones": [
+                    "gates": [
                         {
-                            "id": 1,
-                            "gate_c03s001z001_c02s001z001": {
-                                "x": -17500,
-                                "y": 0,
-                                "z": -17500,
-                                "yaw": 45,
-                                "pitch": 0,
-                                "roll": 0,
-                                "prop": "props_gates_orb_accelerator_01_macro"
-                            },
-                            "test_gate_c03s001z001_c04s001z001_connection": {
-                                "x": 7500,
-                                "y": 0,
-                                "z": -7500,
-                                "yaw": 315,
-                                "pitch": 0,
-                                "roll": 0,
-                                "prop": "props_gates_orb_accelerator_01_macro"
-                            }
+                            "dest_cluster": 2,
+                            "dest_sector": 1,
+                            "x": -17500,
+                            "y": 0,
+                            "z": -17500,
+                            "yaw": 45,
+                            "pitch": 0,
+                            "roll": 0,
+                            "prop": "props_gates_orb_accelerator_01_macro"
+                        },
+                        {
+                            "dest_cluster": 4,
+                            "dest_sector": 1,
+                            "x": 7500,
+                            "y": 0,
+                            "z": -7500,
+                            "yaw": 315,
+                            "pitch": 0,
+                            "roll": 0,
+                            "prop": "props_gates_orb_accelerator_01_macro"
                         }
-                    ]
+                    ],
+                    "zones": []
                 }
             ]
         }
-    ],
-    "connections": {
-        "cluster_01_to_cluster_02": {
-            "source": "gate_c01s001z001_c02s001z001",
-            "destination": "gate_c02s001z001_c01s001z001"
-        }
-    }
+    ]
 }
