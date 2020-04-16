@@ -3,6 +3,7 @@ import sys
 from xml.dom import minidom
 from xml.etree import ElementTree
 
+from generator.utils import add_component_ref_element
 from generator.maps.cluster import Cluster
 
 
@@ -19,7 +20,7 @@ def build_galaxy_file(name, prefix):
     macro.set("name", f"{prefix}_{name}_macro")
     macro.set("class", "galaxy")
 
-    _add_component_ref_element(macro, "standardgalaxy")
+    add_component_ref_element(macro, "standardgalaxy")
 
     connections = ElementTree.SubElement(macro, "connections")
     for cluster in CLUSTERS:
@@ -30,9 +31,11 @@ def build_galaxy_file(name, prefix):
     return root
 
 
-def _add_component_ref_element(parent, value):
-    component = ElementTree.SubElement(parent, "component")
-    component.set("ref", value)
+def build_clusters_file():
+    root = ElementTree.Element("macros")
+    for cluster in CLUSTERS:
+        cluster.add_xml(root)
+    return root
 
 
 def _add_cluster(connections, cluster):
@@ -118,3 +121,9 @@ if __name__ == "__main__":
     doc = minidom.parseString(ElementTree.tostring(galaxy_root))
     with open("galaxy.xml", "wb") as galaxy_file:
         galaxy_file.write(doc.toprettyxml(encoding="utf-8"))
+
+    clusters_root = build_clusters_file()
+
+    doc = minidom.parseString(ElementTree.tostring(clusters_root))
+    with open("clusters.xml", "wb") as clusters_file:
+        clusters_file.write(doc.toprettyxml(encoding="utf-8"))

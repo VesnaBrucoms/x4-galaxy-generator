@@ -1,4 +1,7 @@
 """Cluster class."""
+from xml.etree import ElementTree
+
+from generator.utils import add_component_ref_element
 from generator.maps.sector import Sector
 
 
@@ -35,6 +38,30 @@ class Cluster:
         for sector in self.sectors:
             connections.update(sector.gates)
         return connections
+
+    def add_xml(self, parent_element):
+        macro = ElementTree.SubElement(parent_element, "macro")
+        macro.set("name", self.macro_ref)
+        macro.set("class", "cluster")
+
+        add_component_ref_element(macro, "standardcluster")
+
+        connections = ElementTree.SubElement(macro, "connections")
+        for sector in self.sectors:
+            connection = ElementTree.SubElement(connections, "connection")
+            connection.set("name", sector.connection_ref)
+            connection.set("ref", "sectors")
+            macro = ElementTree.SubElement(connection, "macro")
+            macro.set("ref", sector.macro_ref)
+            macro.set("connection", "cluster")
+
+        if self.environment:
+            connection = ElementTree.SubElement(connections, "connection")
+            connection.set("ref", "content")
+            new_macro = ElementTree.SubElement(connection, "macro")
+            component = ElementTree.SubElement(new_macro, "component")
+            component.set("connection", "space")
+            component.set("ref", self.environment)
 
     def _add_sectors(self, sectors):
         created_sectors = []
