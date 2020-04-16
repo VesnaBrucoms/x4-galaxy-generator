@@ -45,6 +45,13 @@ def build_sectors_file():
     return root
 
 
+def write_xml_file(name, root_element):
+    doc = minidom.parseString(ElementTree.tostring(root_element))
+    file_name = f"{name}.xml"
+    with open(file_name, "wb") as new_file:
+        new_file.write(doc.toprettyxml(encoding="utf-8"))
+
+
 def _add_cluster(connections, cluster):
     x_position, y_position = _calculate_absolute_position(cluster.x, cluster.z)
     connection = create_sub_element(
@@ -119,19 +126,10 @@ if __name__ == "__main__":
         CLUSTERS.append(Cluster(prefix, cluster))
 
     galaxy_root = build_galaxy_file(name, prefix)
-
-    doc = minidom.parseString(ElementTree.tostring(galaxy_root))
-    with open("galaxy.xml", "wb") as galaxy_file:
-        galaxy_file.write(doc.toprettyxml(encoding="utf-8"))
+    write_xml_file("galaxy", galaxy_root)
 
     clusters_root = build_clusters_file()
-
-    doc = minidom.parseString(ElementTree.tostring(clusters_root))
-    with open("clusters.xml", "wb") as clusters_file:
-        clusters_file.write(doc.toprettyxml(encoding="utf-8"))
+    write_xml_file("clusters", clusters_root)
 
     sectors_root = build_sectors_file()
-
-    doc = minidom.parseString(ElementTree.tostring(sectors_root))
-    with open("sectors.xml", "wb") as sectors_file:
-        sectors_file.write(doc.toprettyxml(encoding="utf-8"))
+    write_xml_file("sectors", sectors_root)
