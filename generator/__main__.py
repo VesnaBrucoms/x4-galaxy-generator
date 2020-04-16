@@ -38,6 +38,13 @@ def build_clusters_file():
     return root
 
 
+def build_sectors_file():
+    root = ElementTree.Element("macros")
+    for cluster in CLUSTERS:
+        cluster.add_sector_xml(root)
+    return root
+
+
 def _add_cluster(connections, cluster):
     x_position, y_position = _calculate_absolute_position(cluster.x, cluster.z)
     connection = ElementTree.SubElement(connections, "connection")
@@ -127,3 +134,9 @@ if __name__ == "__main__":
     doc = minidom.parseString(ElementTree.tostring(clusters_root))
     with open("clusters.xml", "wb") as clusters_file:
         clusters_file.write(doc.toprettyxml(encoding="utf-8"))
+
+    sectors_root = build_sectors_file()
+
+    doc = minidom.parseString(ElementTree.tostring(sectors_root))
+    with open("sectors.xml", "wb") as sectors_file:
+        sectors_file.write(doc.toprettyxml(encoding="utf-8"))

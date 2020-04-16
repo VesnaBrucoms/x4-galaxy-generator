@@ -1,4 +1,7 @@
 """Sector class."""
+from xml.etree import ElementTree
+
+from generator.utils import add_component_ref_element
 
 
 class Sector:
@@ -19,6 +22,22 @@ class Sector:
     def macro_ref(self):
         return f"{self.internal_name}_macro"
 
+    def add_xml(self, parent_element):
+        macro = ElementTree.SubElement(parent_element, "macro")
+        macro.set("name", self.macro_ref)
+        macro.set("class", "sector")
+
+        add_component_ref_element(macro, "standardsector")
+
+        connections = ElementTree.SubElement(macro, "connections")
+        for zone in self.zones:
+            connection = ElementTree.SubElement(connections, "connection")
+            connection.set("name", zone["connection_ref"])
+            connection.set("ref", "zones")
+            new_macro = ElementTree.SubElement(connection, "macro")
+            new_macro.set("ref", zone["macro_ref"])
+            new_macro.set("connection", "sector")
+
     def _add_gate_zones(self, gates, parent_id):
         created_gates = {}
         for gate in gates:
@@ -32,6 +51,7 @@ class Sector:
             zone_id = len(self.zones) + 1
             zone_internal_name = f"{self.internal_name}_zone{zone_id:03}"
             zone_connection_ref = f"{zone_internal_name}_connection"
+            zone_macro_ref = f"{zone_internal_name}_macro"
             created_gates[name] = {
                 "destination": dest,
                 "zone": zone_connection_ref,
@@ -43,6 +63,7 @@ class Sector:
                     "id": zone_id,
                     "internal_name": zone_internal_name,
                     "connection_ref": zone_connection_ref,
+                    "macro_ref": zone_macro_ref,
                     "gate_name": name,
                     "x": gate["x"],
                     "y": gate["y"],
