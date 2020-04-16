@@ -1,7 +1,5 @@
 """Cluster class."""
-from xml.etree import ElementTree
-
-from generator.utils import add_component_ref_element
+from generator.utils import create_sub_element
 from generator.maps.sector import Sector
 
 
@@ -40,28 +38,27 @@ class Cluster:
         return connections
 
     def add_xml(self, parent_element):
-        macro = ElementTree.SubElement(parent_element, "macro")
-        macro.set("name", self.macro_ref)
-        macro.set("class", "cluster")
+        macro = create_sub_element(
+            parent_element, "macro", name=self.macro_ref, class_attr="cluster"
+        )
 
-        add_component_ref_element(macro, "standardcluster")
+        create_sub_element(macro, "component", ref="standardcluster")
 
-        connections = ElementTree.SubElement(macro, "connections")
+        connections = create_sub_element(macro, "connections")
         for sector in self.sectors:
-            connection = ElementTree.SubElement(connections, "connection")
-            connection.set("name", sector.connection_ref)
-            connection.set("ref", "sectors")
-            macro = ElementTree.SubElement(connection, "macro")
-            macro.set("ref", sector.macro_ref)
-            macro.set("connection", "cluster")
+            connection = create_sub_element(
+                connections, "connection", name=sector.connection_ref, ref="sectors"
+            )
+            create_sub_element(
+                connection, "macro", ref=sector.macro_ref, connection="cluster"
+            )
 
         if self.environment:
-            connection = ElementTree.SubElement(connections, "connection")
-            connection.set("ref", "content")
-            new_macro = ElementTree.SubElement(connection, "macro")
-            component = ElementTree.SubElement(new_macro, "component")
-            component.set("connection", "space")
-            component.set("ref", self.environment)
+            connection = create_sub_element(connections, "connection", ref="content")
+            env_macro = create_sub_element(connection, "macro")
+            create_sub_element(
+                env_macro, "component", connection="space", ref=self.environment
+            )
 
     def add_sector_xml(self, parent_element):
         for sector in self.sectors:

@@ -3,7 +3,7 @@ import sys
 from xml.dom import minidom
 from xml.etree import ElementTree
 
-from generator.utils import add_component_ref_element
+from generator.utils import create_sub_element
 from generator.maps.cluster import Cluster
 
 
@@ -16,13 +16,13 @@ CONNECTIONS = {}
 
 def build_galaxy_file(name, prefix):
     root = ElementTree.Element("macros")
-    macro = ElementTree.SubElement(root, "macro")
-    macro.set("name", f"{prefix}_{name}_macro")
-    macro.set("class", "galaxy")
+    macro = create_sub_element(
+        root, "macro", name=f"{prefix}_{name}_macro", class_attr="galaxy"
+    )
 
-    add_component_ref_element(macro, "standardgalaxy")
+    create_sub_element(macro, "component", ref="standardgalaxy")
 
-    connections = ElementTree.SubElement(macro, "connections")
+    connections = create_sub_element(macro, "connections")
     for cluster in CLUSTERS:
         _add_cluster(connections, cluster)
         _collect_connections(cluster)
@@ -47,17 +47,12 @@ def build_sectors_file():
 
 def _add_cluster(connections, cluster):
     x_position, y_position = _calculate_absolute_position(cluster.x, cluster.z)
-    connection = ElementTree.SubElement(connections, "connection")
-    connection.set("name", cluster.connection_ref)
-    connection.set("ref", "clusters")
-    offset = ElementTree.SubElement(connection, "offset")
-    position = ElementTree.SubElement(offset, "position")
-    position.set("x", str(x_position))
-    position.set("y", "0")
-    position.set("z", str(y_position))
-    sub_macro = ElementTree.SubElement(connection, "macro")
-    sub_macro.set("ref", cluster.macro_ref)
-    sub_macro.set("connection", "galaxy")
+    connection = create_sub_element(
+        connections, "connection", name=cluster.connection_ref, ref="clusters"
+    )
+    offset = create_sub_element(connection, "offset")
+    create_sub_element(offset, "position", x=str(x_position), y="0", z=str(y_position))
+    create_sub_element(connection, "macro", ref=cluster.macro_ref, connection="galaxy")
 
 
 def _collect_connections(cluster):
