@@ -17,5 +17,5 @@ def create_sub_element(
         checked_key = key
         if checked_key.endswith("_attr"):
             checked_key = key.replace("_attr", "")
-        new_sub_element.set(checked_key, value)
+        new_sub_element.set(checked_key, str(value))
     return new_sub_element

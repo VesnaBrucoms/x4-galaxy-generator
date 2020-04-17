@@ -45,6 +45,13 @@ def build_sectors_file():
     return root
 
 
+def build_zones_file():
+    root = ElementTree.Element("macros")
+    for cluster in CLUSTERS:
+        cluster.add_zone_xml(root)
+    return root
+
+
 def write_xml_file(name, root_element):
     doc = minidom.parseString(ElementTree.tostring(root_element))
     file_name = f"{name}.xml"
@@ -58,7 +65,7 @@ def _add_cluster(connections, cluster):
         connections, "connection", name=cluster.connection_ref, ref="clusters"
     )
     offset = create_sub_element(connection, "offset")
-    create_sub_element(offset, "position", x=str(x_position), y="0", z=str(y_position))
+    create_sub_element(offset, "position", x=x_position, y="0", z=y_position)
     create_sub_element(connection, "macro", ref=cluster.macro_ref, connection="galaxy")
 
 
@@ -100,8 +107,9 @@ def _add_connection(connections_element, clusters):
         destination = conn_values["destination"]
         zone_connection_ref = ""
         for zone in dest_sector.zones:
-            if zone["gate_name"] == destination:
-                zone_connection_ref = zone["connection_ref"]
+            for zone_object in zone.objects:
+                if zone_object["name"] == destination:
+                    zone_connection_ref = zone.connection_ref
         dest_path = f"../../../../../{dest_cluster.connection_ref}/{dest_sector.connection_ref}/{zone_connection_ref}/{destination}"
 
         clean_name = conn_name.replace("connection_", "")
@@ -133,3 +141,6 @@ if __name__ == "__main__":
 
     sectors_root = build_sectors_file()
     write_xml_file("sectors", sectors_root)
+
+    zones_root = build_zones_file()
+    write_xml_file("zones", zones_root)

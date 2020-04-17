@@ -64,6 +64,11 @@ class Cluster:
         for sector in self.sectors:
             sector.add_xml(parent_element)
 
+    def add_zone_xml(self, parent_element):
+        for sector in self.sectors:
+            for zone in sector.zones:
+                zone.add_xml(parent_element)
+
     def _add_sectors(self, sectors):
         created_sectors = []
         for sector in sectors:

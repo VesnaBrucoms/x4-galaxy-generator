@@ -1,5 +1,6 @@
 """Sector class."""
 from generator.utils import create_sub_element
+from generator.maps.zones import Zone
 
 
 class Sector:
@@ -30,10 +31,10 @@ class Sector:
         connections = create_sub_element(macro, "connections")
         for zone in self.zones:
             connection = create_sub_element(
-                connections, "connection", name=zone["connection_ref"], ref="zones"
+                connections, "connection", name=zone.connection_ref, ref="zones"
             )
             create_sub_element(
-                connection, "macro", ref=zone["macro_ref"], connection="sector"
+                connection, "macro", ref=zone.macro_ref, connection="sector"
             )
 
     def _add_gate_zones(self, gates, parent_id):
@@ -43,34 +44,29 @@ class Sector:
             dest_sector_id = gate.pop("dest_sector")
             source_sig = f"c{parent_id:03}s{self.id:03}"
             destination_sig = f"c{dest_cluster_id:03}s{dest_sector_id:03}"
-            name = f"connection_{source_sig}_to_{destination_sig}"
-            dest = f"connection_{destination_sig}_to_{source_sig}"
+            gate_name = f"connection_{source_sig}_to_{destination_sig}"
+            gate_dest = f"connection_{destination_sig}_to_{source_sig}"
 
             zone_id = len(self.zones) + 1
-            zone_internal_name = f"{self.internal_name}_zone{zone_id:03}"
-            zone_connection_ref = f"{zone_internal_name}_connection"
-            zone_macro_ref = f"{zone_internal_name}_macro"
-            created_gates[name] = {
-                "destination": dest,
-                "zone": zone_connection_ref,
+            gate_object = {
+                "name": gate_name,
+                "type": "gates",
+                "x": gate["x"],
+                "y": gate["y"],
+                "z": gate["z"],
+                "yaw": gate["yaw"],
+                "pitch": gate["pitch"],
+                "roll": gate["roll"],
+                "prop": gate["prop"],
+            }
+            new_gate_zone = Zone(
+                {"id": zone_id, "objects": [gate_object]}, self.internal_name,
+            )
+            self.zones.append(new_gate_zone)
+            created_gates[gate_name] = {
+                "destination": gate_dest,
+                "zone": new_gate_zone.connection_ref,
                 "sector": self.connection_ref,
             }
-
-            self.zones.append(
-                {
-                    "id": zone_id,
-                    "internal_name": zone_internal_name,
-                    "connection_ref": zone_connection_ref,
-                    "macro_ref": zone_macro_ref,
-                    "gate_name": name,
-                    "x": gate["x"],
-                    "y": gate["y"],
-                    "z": gate["z"],
-                    "yaw": gate["yaw"],
-                    "pitch": gate["pitch"],
-                    "roll": gate["roll"],
-                    "prop": gate["prop"],
-                }
-            )
 
         return created_gates
