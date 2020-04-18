@@ -1,6 +1,6 @@
 """Sector class."""
 from generator.utils import create_sub_element
-from generator.maps.zones import Zone
+from generator.maps.zone import Zone
 
 
 class Sector:

@@ -52,6 +52,18 @@ def build_zones_file():
     return root
 
 
+def build_mapdefaults_file():
+    root = ElementTree.Element("defaults")
+    root.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+    root.set("xsi:noNamespaceSchemaLocation", "libraries.xsd")
+    for cluster in CLUSTERS:
+        _add_dataset_xml(root, cluster)
+        for sector in cluster.sectors:
+            _add_dataset_xml(root, sector)
+
+    return root
+
+
 def write_xml_file(name, root_element):
     doc = minidom.parseString(ElementTree.tostring(root_element))
     file_name = f"{name}.xml"
@@ -123,6 +135,23 @@ def _add_connection(connections_element, clusters):
         macro.set("path", dest_path)
 
 
+def _add_dataset_xml(parent_element, macro):
+    dataset = create_sub_element(parent_element, "dataset", macro=macro.macro_ref)
+    props = create_sub_element(dataset, "properties")
+    try:
+        create_sub_element(
+            props,
+            "identification",
+            name=macro.name,
+            description=macro.description,
+            system=macro.system,
+        )
+    except AttributeError:
+        create_sub_element(
+            props, "identification", name=macro.name, description=macro.description,
+        )
+
+
 if __name__ == "__main__":
     input_json = None
     with open(sys.argv[1]) as input_file:
@@ -144,3 +173,6 @@ if __name__ == "__main__":
 
     zones_root = build_zones_file()
     write_xml_file("zones", zones_root)
+
+    mapdefaults_root = build_mapdefaults_file()
+    write_xml_file("mapdefaults", mapdefaults_root)

@@ -10,6 +10,8 @@ class Cluster:
         self.z = cluster["z"]
         self.name = cluster.get("name", f"CLUSTER{self.id:03}")
         self.description = cluster.get("description", "UNKNOWN")
+        if "system" in cluster.keys():
+            self.system = cluster["system"]
         self.environment = cluster.get("environment", None)
         self.internal_name = f"{prefix}_cluster{self.id:03}"
 
