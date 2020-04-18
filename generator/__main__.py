@@ -1,5 +1,6 @@
 import json
 import sys
+from pathlib import Path
 from xml.dom import minidom
 from xml.etree import ElementTree
 
@@ -162,17 +163,23 @@ if __name__ == "__main__":
     for cluster in input_json["clusters"]:
         CLUSTERS.append(Cluster(prefix, cluster))
 
+    map_path = f"./output/maps/{prefix}_map"
+    lib_path = "./output/libraries"
+
+    Path(map_path).mkdir(parents=True, exist_ok=True)
+    Path(lib_path).mkdir(parents=True, exist_ok=True)
+
     galaxy_root = build_galaxy_file(name, prefix)
-    write_xml_file("galaxy", galaxy_root)
+    write_xml_file(f"{map_path}/galaxy", galaxy_root)
 
     clusters_root = build_clusters_file()
-    write_xml_file("clusters", clusters_root)
+    write_xml_file(f"{map_path}/clusters", clusters_root)
 
     sectors_root = build_sectors_file()
-    write_xml_file("sectors", sectors_root)
+    write_xml_file(f"{map_path}/sectors", sectors_root)
 
     zones_root = build_zones_file()
-    write_xml_file("zones", zones_root)
+    write_xml_file(f"{map_path}/zones", zones_root)
 
     mapdefaults_root = build_mapdefaults_file()
-    write_xml_file("mapdefaults", mapdefaults_root)
+    write_xml_file(f"{lib_path}/mapdefaults", mapdefaults_root)
