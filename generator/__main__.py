@@ -65,6 +65,34 @@ def build_mapdefaults_file():
     return root
 
 
+def build_macros_file(prefix, galaxy_name):
+    root = ElementTree.Element("index")
+    create_sub_element(
+        root,
+        "entry",
+        name=f"{prefix}_{galaxy_name}_macro",
+        value=f"maps\\{prefix}_map\\galaxy",
+    )
+    create_sub_element(
+        root, "entry", name=f"{prefix}_cluster*", value=f"maps\\{prefix}_map\\clusters"
+    )
+    for cluster in CLUSTERS:
+        create_sub_element(
+            root,
+            "entry",
+            name=f"{cluster.internal_name}_sector*",
+            value=f"maps\\{prefix}_map\\sectors",
+        )
+        for sector in cluster.sectors:
+            create_sub_element(
+                root,
+                "entry",
+                name=f"{sector.internal_name}_zone*",
+                value=f"maps\\{prefix}_map\\zones",
+            )
+    return root
+
+
 def write_xml_file(name, root_element):
     doc = minidom.parseString(ElementTree.tostring(root_element))
     file_name = f"{name}.xml"
@@ -163,11 +191,13 @@ if __name__ == "__main__":
     for cluster in input_json["clusters"]:
         CLUSTERS.append(Cluster(prefix, cluster))
 
-    map_path = f"./output/maps/{prefix}_map"
+    ind_path = "./output/index"
     lib_path = "./output/libraries"
+    map_path = f"./output/maps/{prefix}_map"
 
-    Path(map_path).mkdir(parents=True, exist_ok=True)
+    Path(ind_path).mkdir(parents=True, exist_ok=True)
     Path(lib_path).mkdir(parents=True, exist_ok=True)
+    Path(map_path).mkdir(parents=True, exist_ok=True)
 
     galaxy_root = build_galaxy_file(name, prefix)
     write_xml_file(f"{map_path}/galaxy", galaxy_root)
@@ -183,3 +213,6 @@ if __name__ == "__main__":
 
     mapdefaults_root = build_mapdefaults_file()
     write_xml_file(f"{lib_path}/mapdefaults", mapdefaults_root)
+
+    macros_root = build_macros_file(prefix, name)
+    write_xml_file(f"{ind_path}/macros", macros_root)
