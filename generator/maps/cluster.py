@@ -39,38 +39,6 @@ class Cluster:
             connections.update(sector.gates)
         return connections
 
-    def add_xml(self, parent_element):
-        macro = create_sub_element(
-            parent_element, "macro", name=self.macro_ref, class_attr="cluster"
-        )
-
-        create_sub_element(macro, "component", ref="standardcluster")
-
-        connections = create_sub_element(macro, "connections")
-        for sector in self.sectors:
-            connection = create_sub_element(
-                connections, "connection", name=sector.connection_ref, ref="sectors"
-            )
-            create_sub_element(
-                connection, "macro", ref=sector.macro_ref, connection="cluster"
-            )
-
-        if self.environment:
-            connection = create_sub_element(connections, "connection", ref="content")
-            env_macro = create_sub_element(connection, "macro")
-            create_sub_element(
-                env_macro, "component", connection="space", ref=self.environment
-            )
-
-    def add_sector_xml(self, parent_element):
-        for sector in self.sectors:
-            sector.add_xml(parent_element)
-
-    def add_zone_xml(self, parent_element):
-        for sector in self.sectors:
-            for zone in sector.zones:
-                zone.add_xml(parent_element)
-
     def _add_sectors(self, sectors):
         created_sectors = []
         for sector in sectors:

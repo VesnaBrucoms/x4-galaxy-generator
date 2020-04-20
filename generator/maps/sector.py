@@ -11,7 +11,9 @@ class Sector:
         self.zones = sector["zones"]
         self.internal_name = f"{cluster_name}_sector{self.id:03}"
 
-        self.gates = self._add_gate_zones(sector["gates"], cluster_id)
+        self.gates = self._add_gate_zones(
+            sector["gates"], cluster_id, f"{cluster_name}_connection"
+        )
 
     @property
     def connection_ref(self):
@@ -21,23 +23,7 @@ class Sector:
     def macro_ref(self):
         return f"{self.internal_name}_macro"
 
-    def add_xml(self, parent_element):
-        macro = create_sub_element(
-            parent_element, "macro", name=self.macro_ref, class_attr="sector"
-        )
-
-        create_sub_element(macro, "component", ref="standardsector")
-
-        connections = create_sub_element(macro, "connections")
-        for zone in self.zones:
-            connection = create_sub_element(
-                connections, "connection", name=zone.connection_ref, ref="zones"
-            )
-            create_sub_element(
-                connection, "macro", ref=zone.macro_ref, connection="sector"
-            )
-
-    def _add_gate_zones(self, gates, parent_id):
+    def _add_gate_zones(self, gates, parent_id, parent_ref):
         created_gates = {}
         for gate in gates:
             dest_cluster_id = gate.pop("dest_cluster")
@@ -67,6 +53,7 @@ class Sector:
                 "destination": gate_dest,
                 "zone": new_gate_zone.connection_ref,
                 "sector": self.connection_ref,
+                "cluster": parent_ref,
             }
 
         return created_gates
