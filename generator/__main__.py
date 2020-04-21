@@ -12,24 +12,12 @@ from generator.utils import create_sub_element
 GALAXY = None
 
 
-def build_galaxy_file(builder):
+def build_map_files(builder):
     builder.build_galaxy(GALAXY)
-
-
-def build_clusters_file(builder):
     for cluster in GALAXY.clusters:
         builder.build_cluster(cluster)
-
-
-def build_sectors_file(builder):
-    for cluster in GALAXY.clusters:
         for sector in cluster.sectors:
             builder.build_sector(sector)
-
-
-def build_zones_file(builder):
-    for cluster in GALAXY.clusters:
-        for sector in cluster.sectors:
             for zone in sector.zones:
                 builder.build_zone(zone)
 
@@ -121,16 +109,13 @@ if __name__ == "__main__":
     Path(map_path).mkdir(parents=True, exist_ok=True)
 
     builder = MapBuilder()
-    build_galaxy_file(builder)
-    build_clusters_file(builder)
-    build_sectors_file(builder)
-    build_zones_file(builder)
+    build_map_files(builder)
 
-    result = builder.get_result()
-    write_xml_file(f"{map_path}/galaxy", result[0])
-    write_xml_file(f"{map_path}/clusters", result[1])
-    write_xml_file(f"{map_path}/sectors", result[2])
-    write_xml_file(f"{map_path}/zones", result[3])
+    results = builder.get_result()
+    write_xml_file(f"{map_path}/galaxy", results[0])
+    write_xml_file(f"{map_path}/clusters", results[1])
+    write_xml_file(f"{map_path}/sectors", results[2])
+    write_xml_file(f"{map_path}/zones", results[3])
 
     mapdefaults_root = build_mapdefaults_file()
     write_old_xml_file(f"{lib_path}/mapdefaults", mapdefaults_root)
