@@ -6,8 +6,12 @@ from generator.maps.zone import Zone
 class Sector:
     def __init__(self, sector, cluster_id, cluster_name):
         self.id = sector["id"]
+        self.x = sector["x"]
+        self.y = 0
+        self.z = sector["z"]
         self.name = sector.get("name", f"SECTOR{self.id:03}")
         self.description = sector.get("description", "UNKNOWN")
+        self.encyclopedia = sector.get("encyclopedia", {})
         self.zones = sector["zones"]
         self.internal_name = f"{cluster_name}_sector{self.id:03}"
 

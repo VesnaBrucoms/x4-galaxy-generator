@@ -24,16 +24,20 @@ class MapDefaultsBuilder:
     def _add_dataset_xml(self, macro):
         dataset = create_sub_element(self._root, "dataset", macro=macro.macro_ref)
         props = create_sub_element(dataset, "properties")
+        enc_image = macro.encyclopedia.get("image", None)
         try:
-            self._add_identification(props, macro.name, macro.description, macro.system)
+            self._add_identification(
+                props, macro.name, macro.description, enc_image, macro.system
+            )
         except AttributeError:
-            self._add_identification(props, macro.name, macro.description)
+            self._add_identification(props, macro.name, macro.description, enc_image)
 
-    def _add_identification(self, parent_element, name, desc, system=None):
+    def _add_identification(self, parent_element, name, desc, image, system=None):
         create_sub_element(
             parent_element,
             "identification",
             name=name,
             description=desc,
             system=system,
+            image=image,
         )

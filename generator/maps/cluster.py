@@ -7,9 +7,11 @@ class Cluster:
     def __init__(self, prefix, cluster):
         self.id = cluster["id"]
         self.x = cluster["x"]
+        self.y = 0
         self.z = cluster["z"]
         self.name = cluster.get("name", f"CLUSTER{self.id:03}")
         self.description = cluster.get("description", "UNKNOWN")
+        self.encyclopedia = cluster.get("encyclopedia", {})
         if "system" in cluster.keys():
             self.system = cluster["system"]
         self.environment = cluster.get("environment", None)

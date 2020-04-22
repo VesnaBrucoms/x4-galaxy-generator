@@ -9,11 +9,17 @@
             "x": 0,
             "z": 0,
             "environment": "Cluster_31",
+            "encyclopedia": {
+                "image": "enc_cluster31"
+            },
             "sectors": [
                 {
                     "id": 1,
                     "name": "Heretic's End",
                     "description": "Test desc.",
+                    "x": 0,
+                    "z": 0,
+                    "encyclopedia": {},
                     "gates": [
                         {
                             "dest_cluster": 2,
@@ -43,6 +49,8 @@
                     "id": 1,
                     "name": "Asteroid Belt",
                     "description": "Test desc.",
+                    "x": 0,
+                    "z": 0,
                     "gates": [
                         {
                             "dest_cluster": 1,
@@ -94,6 +102,8 @@
                     "id": 1,
                     "name": "Mars",
                     "description": "Test desc.",
+                    "x": 0,
+                    "z": 0,
                     "gates": [
                         {
                             "dest_cluster": 2,
