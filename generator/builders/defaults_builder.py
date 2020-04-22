@@ -25,14 +25,15 @@ class MapDefaultsBuilder:
         dataset = create_sub_element(self._root, "dataset", macro=macro.macro_ref)
         props = create_sub_element(dataset, "properties")
         try:
-            create_sub_element(
-                props,
-                "identification",
-                name=macro.name,
-                description=macro.description,
-                system=macro.system,
-            )
+            self._add_identification(props, macro.name, macro.description, macro.system)
         except AttributeError:
-            create_sub_element(
-                props, "identification", name=macro.name, description=macro.description,
-            )
+            self._add_identification(props, macro.name, macro.description)
+
+    def _add_identification(self, parent_element, name, desc, system=None):
+        create_sub_element(
+            parent_element,
+            "identification",
+            name=name,
+            description=desc,
+            system=system,
+        )

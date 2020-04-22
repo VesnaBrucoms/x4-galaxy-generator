@@ -20,14 +20,19 @@ def create_sub_element(
 ) -> ElementTree:
     """Creates new sub element of parent with 0 to many attributes.
 
-    Any kwargs are added as attributes of the new element. For any
+    Any kwargs are set as attributes of the new element. For any
     attributes with names like "class", append "_attr" to the kwarg
     and the suffix will be stripped. For example, if the new element
     has an attribute of "class='cluster'", then pass in a kwarg of
     "class_attr='cluster'".
+
+    A kwarg passed as None with result in that attribute not being
+    set to the element.
     """
     new_sub_element = ElementTree.SubElement(parent, element_name)
     for key, value in kwargs.items():
+        if not value:
+            continue
         checked_key = key
         if checked_key.endswith("_attr"):
             checked_key = key.replace("_attr", "")
