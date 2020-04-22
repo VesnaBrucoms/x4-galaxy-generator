@@ -33,16 +33,16 @@ class Galaxy:
             for source_path in unpaired_source_paths:
                 source_gate_name = source_path.split("/")[-1]
                 if source_gate_name == values["destination"]:
-                    cluster_ref = values.pop("cluster")
-                    sector_ref = values.pop("sector")
-                    zone_ref = values.pop("zone")
+                    cluster_ref = values["cluster"]
+                    sector_ref = values["sector"]
+                    zone_ref = values["zone"]
                     path = f"../../../../../{cluster_ref}/{sector_ref}/{zone_ref}/{gate_name}"
                     sorted_conns[source_path] = path
                     break
             else:
-                cluster_ref = values.pop("cluster")
-                sector_ref = values.pop("sector")
-                zone_ref = values.pop("zone")
+                cluster_ref = values["cluster"]
+                sector_ref = values["sector"]
+                zone_ref = values["zone"]
                 path = f"../{cluster_ref}/{sector_ref}/{zone_ref}/{gate_name}"
                 unpaired_source_paths.append(path)
         self.connections = sorted_conns

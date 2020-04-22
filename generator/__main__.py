@@ -2,8 +2,9 @@ import json
 import sys
 from pathlib import Path
 from xml.dom import minidom
-from xml.etree import ElementTree
 
+from generator.builders.defaults_builder import MapDefaultsBuilder
+from generator.builders.index_builder import IndexBuilder
 from generator.builders.map_builder import MapBuilder
 from generator.maps.galaxy import Galaxy
 from generator.utils import create_sub_element
@@ -22,44 +23,12 @@ def build_map_files(builder):
                 builder.build_zone(zone)
 
 
-def build_mapdefaults_file():
-    root = ElementTree.Element("defaults")
-    root.set("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
-    root.set("xsi:noNamespaceSchemaLocation", "libraries.xsd")
-    for cluster in GALAXY.clusters:
-        _add_dataset_xml(root, cluster)
-        for sector in cluster.sectors:
-            _add_dataset_xml(root, sector)
-
-    return root
+def build_mapdefaults_file(builder):
+    builder.build_defaults(GALAXY.clusters)
 
 
-def build_macros_file():
-    root = ElementTree.Element("index")
-    create_sub_element(
-        root, "entry", name=GALAXY.macro_ref, value=f"maps\\{GALAXY.map_name}\\galaxy",
-    )
-    create_sub_element(
-        root,
-        "entry",
-        name=f"{GALAXY.prefix}_cluster*",
-        value=f"maps\\{GALAXY.map_name}\\clusters",
-    )
-    for cluster in GALAXY.clusters:
-        create_sub_element(
-            root,
-            "entry",
-            name=f"{cluster.internal_name}_sector*",
-            value=f"maps\\{GALAXY.map_name}\\sectors",
-        )
-        for sector in cluster.sectors:
-            create_sub_element(
-                root,
-                "entry",
-                name=f"{sector.internal_name}_zone*",
-                value=f"maps\\{GALAXY.map_name}\\zones",
-            )
-    return root
+def build_macros_file(builder):
+    builder.build_entries(GALAXY)
 
 
 def write_xml_file(name, root_element):
@@ -67,30 +36,6 @@ def write_xml_file(name, root_element):
     file_name = f"{name}.xml"
     with open(file_name, "wb") as new_file:
         new_file.write(doc.toprettyxml(encoding="utf-8"))
-
-
-def write_old_xml_file(name, root_element):
-    doc = minidom.parseString(ElementTree.tostring(root_element))
-    file_name = f"{name}.xml"
-    with open(file_name, "wb") as new_file:
-        new_file.write(doc.toprettyxml(encoding="utf-8"))
-
-
-def _add_dataset_xml(parent_element, macro):
-    dataset = create_sub_element(parent_element, "dataset", macro=macro.macro_ref)
-    props = create_sub_element(dataset, "properties")
-    try:
-        create_sub_element(
-            props,
-            "identification",
-            name=macro.name,
-            description=macro.description,
-            system=macro.system,
-        )
-    except AttributeError:
-        create_sub_element(
-            props, "identification", name=macro.name, description=macro.description,
-        )
 
 
 if __name__ == "__main__":
@@ -117,8 +62,10 @@ if __name__ == "__main__":
     write_xml_file(f"{map_path}/sectors", results[2])
     write_xml_file(f"{map_path}/zones", results[3])
 
-    mapdefaults_root = build_mapdefaults_file()
-    write_old_xml_file(f"{lib_path}/mapdefaults", mapdefaults_root)
+    defaults_builder = MapDefaultsBuilder()
+    build_mapdefaults_file(defaults_builder)
+    write_xml_file(f"{lib_path}/mapdefaults", defaults_builder.get_result())
 
-    macros_root = build_macros_file()
-    write_old_xml_file(f"{ind_path}/macros", macros_root)
+    index_builder = IndexBuilder()
+    build_macros_file(index_builder)
+    write_xml_file(f"{ind_path}/macros", index_builder.get_result())

@@ -2,6 +2,19 @@
 from xml.etree import ElementTree
 
 
+def create_root_element(
+    element_name: str, namespace: str = None, schema: str = None
+) -> ElementTree:
+    """Creates new root element with two optional attributes.
+    """
+    new_root = ElementTree.Element(element_name)
+    if namespace:
+        new_root.set("xmlns:xsi", namespace)
+    if schema:
+        new_root.set("xsi:noNamespaceSchemaLocation", schema)
+    return new_root
+
+
 def create_sub_element(
     parent: ElementTree.Element, element_name: str, **kwargs
 ) -> ElementTree:

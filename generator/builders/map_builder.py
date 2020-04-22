@@ -1,7 +1,7 @@
 """Map builder class."""
 from xml.etree import ElementTree
 
-from generator.utils import create_sub_element
+from generator.utils import create_root_element, create_sub_element
 
 
 X_HEX_SPACING = 15000000
@@ -11,14 +11,14 @@ Z_HALF_SPACING = 8660000
 
 class MapBuilder:
     def __init__(self):
-        self.galaxy_root = ElementTree.Element("macros")
-        self.clusters_root = ElementTree.Element("macros")
-        self.sectors_root = ElementTree.Element("macros")
-        self.zones_root = ElementTree.Element("macros")
+        self._galaxy_root = create_root_element("macros")
+        self._clusters_root = create_root_element("macros")
+        self._sectors_root = create_root_element("macros")
+        self._zones_root = create_root_element("macros")
 
     def build_galaxy(self, galaxy):
         macro = create_sub_element(
-            self.galaxy_root, "macro", name=galaxy.macro_ref, class_attr="galaxy"
+            self._galaxy_root, "macro", name=galaxy.macro_ref, class_attr="galaxy"
         )
         create_sub_element(macro, "component", ref="standardgalaxy")
         connections = create_sub_element(macro, "connections")
@@ -38,7 +38,7 @@ class MapBuilder:
 
     def build_cluster(self, cluster):
         macro = create_sub_element(
-            self.clusters_root, "macro", name=cluster.macro_ref, class_attr="cluster"
+            self._clusters_root, "macro", name=cluster.macro_ref, class_attr="cluster"
         )
         create_sub_element(macro, "component", ref="standardcluster")
         connections = create_sub_element(macro, "connections")
@@ -60,7 +60,7 @@ class MapBuilder:
 
     def build_sector(self, sector):
         macro = create_sub_element(
-            self.sectors_root, "macro", name=sector.macro_ref, class_attr="sector"
+            self._sectors_root, "macro", name=sector.macro_ref, class_attr="sector"
         )
         create_sub_element(macro, "component", ref="standardsector")
         connections = create_sub_element(macro, "connections")
@@ -71,7 +71,7 @@ class MapBuilder:
 
     def build_zone(self, zone):
         macro = create_sub_element(
-            self.zones_root, "macro", name=zone.macro_ref, class_attr="zone"
+            self._zones_root, "macro", name=zone.macro_ref, class_attr="zone"
         )
         create_sub_element(macro, "component", ref="standardzone")
         connections = create_sub_element(macro, "connections")
@@ -98,10 +98,10 @@ class MapBuilder:
 
     def get_result(self):
         return (
-            ElementTree.tostring(self.galaxy_root),
-            ElementTree.tostring(self.clusters_root),
-            ElementTree.tostring(self.sectors_root),
-            ElementTree.tostring(self.zones_root),
+            ElementTree.tostring(self._galaxy_root),
+            ElementTree.tostring(self._clusters_root),
+            ElementTree.tostring(self._sectors_root),
+            ElementTree.tostring(self._zones_root),
         )
 
     def _add_galaxy_cluster(self, parent_element, cluster):
